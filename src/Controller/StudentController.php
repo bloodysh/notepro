@@ -103,13 +103,26 @@ class StudentController extends AbstractController
     }
 
     #[Route('/{id}/notes', name: 'app_student_notes', methods: ['GET', 'POST'])]
-    public function notes(Student $student, EntityManagerInterface $entityManager): Response
+    public function notes(Student $student = null, EntityManagerInterface $entityManager): Response
     {
+        // If $student is null, try to get the currently authenticated user
+        if ($student === null) {
+            $user = $this->getUser();
+            // Check if the user is a Student
+            if ($user instanceof Student) {
+                $student = $user;
+            } else {
+                throw $this->createAccessDeniedException('Access is denied for this user.');
+            }
+        }
+
+        // Calculate the average grade.
+        $averageGrade = $student->calulMoyenne();
 
         return $this->render('student/mygrades.html.twig', [
             'student' => $student,
-            'grades' => $student->getGrades()
-
+            'grades' => $student->getGrades(),
+            'averageGrade' => $averageGrade,
         ]);
     }
 }

@@ -40,9 +40,13 @@ class Evaluation
     #[ORM\OneToMany(mappedBy: 'evaluation', targetEntity: Grade::class, orphanRemoval: true)]
     private Collection $grades;
 
+    #[ORM\OneToMany(mappedBy: 'evaluation', targetEntity: Categorie::class)]
+    private Collection $categorie;
+
     public function __construct()
     {
         $this->grades = new ArrayCollection();
+        $this->categorie = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -160,5 +164,53 @@ class Evaluation
             }
         }
         return null;
+    }
+
+    public function calulMoyenne(): ?float
+    {
+        $grades = $this->getGrades();
+
+        if ($grades->isEmpty()) {
+            return null;
+        }
+        $totalPoints = 0;
+        $totalEvaluations = 0;
+
+        foreach ($grades as $grade) {
+            $totalPoints += $grade->getGrade();
+            $totalEvaluations++;
+        }
+
+        return ($totalEvaluations > 0) ? $totalPoints / $totalEvaluations : null;
+    }
+
+    /**
+     * @return Collection<int, Categorie>
+     */
+    public function getCategorie(): Collection
+    {
+        return $this->categorie;
+    }
+
+    public function addCategorie(Categorie $categorie): static
+    {
+        if (!$this->categorie->contains($categorie)) {
+            $this->categorie->add($categorie);
+            $categorie->setEvaluation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategorie(Categorie $categorie): static
+    {
+        if ($this->categorie->removeElement($categorie)) {
+            // set the owning side to null (unless already changed)
+            if ($categorie->getEvaluation() === $this) {
+                $categorie->setEvaluation(null);
+            }
+        }
+
+        return $this;
     }
 }

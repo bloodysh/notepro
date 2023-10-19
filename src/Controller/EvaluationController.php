@@ -94,6 +94,8 @@ class EvaluationController extends AbstractController
         $form = $this->createForm(SetGradeType::class,null,['students' => $evaluation->getClassLevel()->getStudents(), 'evaluation' => $evaluation]);
         $form->handleRequest($request);
 
+        $averageGrade = $evaluation->calulMoyenne();
+
         if ($form->isSubmitted() && $form->isValid()) {
             foreach ($form->getData() as $key => $value){
                 $gradeOrPresence = explode('_', $key);
@@ -123,6 +125,7 @@ class EvaluationController extends AbstractController
         return $this->render('evaluation/setgrade.html.twig', [
             'evaluation' => $evaluation,
             'form' => $form,
+            'avgGrade'=>$averageGrade,
         ]);
     }
 }

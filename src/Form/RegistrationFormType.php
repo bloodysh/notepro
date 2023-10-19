@@ -39,7 +39,9 @@ class RegistrationFormType extends AbstractType
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Saisissez un mot de passe',
+
                     ]),
+                    new PasswordStrength(['minScore'=>PasswordStrength::STRENGTH_VERY_STRONG])
                 ],
             ])
         ;

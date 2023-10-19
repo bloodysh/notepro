@@ -74,4 +74,23 @@ class Student extends User
         }
         return null;
     }
+
+    public function calulMoyenne(): ?float
+    {
+        $grades = $this->getGrades();
+
+        if ($grades->isEmpty()) {
+            return null;
+        }
+        $totalPoints = 0;
+        $totalEvaluations = 0;
+
+        foreach ($grades as $grade) {
+            $totalPoints += $grade->getGrade();
+            $totalEvaluations++;
+        }
+
+        return ($totalEvaluations > 0) ? $totalPoints / $totalEvaluations : null;
+    }
+
 }
